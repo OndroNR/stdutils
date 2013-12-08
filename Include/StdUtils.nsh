@@ -49,6 +49,7 @@
 !define StdUtils.ExecShellAsUser  '!insertmacro _StdUtils_ExecShlUser'   #ShellExecute() with user context (for elevated installers)
 !define StdUtils.InvokeShellVerb  '!insertmacro _StdUtils_InvkeShlVrb'   #Invokes a Shell Verb on the specified item
 !define StdUtils.ExecShellWait    '!insertmacro _StdUtils_ExecShlWait'   #ShellExecuteEx() with process handle to wait for
+!define StdUtils.ExecShellWaitEx  '!insertmacro _StdUtils_ExecShlWaitEx' #ShellExecuteEx() with process handle to wait for, return error code
 !define StdUtils.WaitForProc      '!insertmacro _StdUtils_WaitForProc'   #WaitForSingleObject() to wait for process termination
 !define StdUtils.WaitForProcEx    '!insertmacro _StdUtils_WaitForProcEx' #WaitForSingleObject() to wait for process termination, get exit code
 !define StdUtils.GetParameter     '!insertmacro _StdUtils_GetParameter'  #Get the value of a specific commandline paramater
@@ -218,6 +219,15 @@
 	push '${args}'
 	StdUtils::ExecShellWait /NOUNLOAD
 	pop ${out}
+!macroend
+
+!macro _StdUtils_ExecShlWaitEx out out_error file verb args
+	push '${file}'
+	push '${verb}'
+	push '${args}'
+	StdUtils::ExecShellWaitEx /NOUNLOAD
+	pop ${out}
+	pop ${out_error}
 !macroend
 
 !macro _StdUtils_WaitForProc handle

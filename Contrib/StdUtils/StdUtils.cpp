@@ -655,6 +655,55 @@ NSISFUNC(ExecShellWait)
 	delete [] args;
 }
 
+NSISFUNC(ExecShellWaitEx)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+	MAKESTR(file, g_stringsize);
+	MAKESTR(verb, g_stringsize);
+	MAKESTR(args, g_stringsize);
+	
+	popstringn(args, 0);
+	popstringn(verb, 0);
+	popstringn(file, 0);
+
+	SHELLEXECUTEINFO shInfo;
+	memset(&shInfo, 0, sizeof(SHELLEXECUTEINFO));
+	shInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+	shInfo.hwnd = hWndParent;
+	shInfo.fMask = SEE_MASK_NOASYNC | SEE_MASK_NOCLOSEPROCESS;
+	shInfo.lpFile = file;
+	shInfo.lpVerb = (_tcslen(verb) > 0) ? verb : NULL;
+	shInfo.lpParameters = (_tcslen(args) > 0) ? args : NULL;
+	shInfo.nShow = SW_SHOWNORMAL;
+
+	if(ShellExecuteEx(&shInfo))
+	{
+		if((shInfo.hProcess != NULL) && (shInfo.hProcess != INVALID_HANDLE_VALUE))
+		{
+			TCHAR out[32];
+			SNPRINTF(out, 32, T("hProc:%08X"), shInfo.hProcess);
+			pushint(0);
+			pushstring(out);
+		}
+		else
+		{
+			pushint(0);
+			pushstring(T("no_wait"));
+		}
+	}
+	else
+	{
+		DWORD lastError = GetLastError();
+		pushint(lastError);
+		pushstring(T("error"));
+	}
+
+	delete [] file;
+	delete [] verb;
+	delete [] args;
+}
+
 NSISFUNC(WaitForProc)
 {
 	EXDLL_INIT();

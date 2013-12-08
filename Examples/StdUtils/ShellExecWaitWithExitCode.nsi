@@ -18,7 +18,7 @@ ShowInstDetails show
 Section
 	DetailPrint 'ExecShellWait: "$SYSDIR\mspaint.exe"'
 	Sleep 1000
-	${StdUtils.ExecShellWait} $0 "$SYSDIR\mspaint.exe" "open" "" ;try to launch the process
+	${StdUtils.ExecShellWaitEx} $0 $1 "$SYSDIR\mspaint.exe" "open" "" ;try to launch the process
 	DetailPrint "Result: $0" ;returns process handle. Might be "no_wait". Failure indicated by "error".
 	StrCmp $0 "error" WaitFailed ;check if process failed to create.
 	StrCmp $0 "no_wait" WaitNotPossible ;check if process can be waited for. Always check this!
@@ -30,7 +30,9 @@ Section
 	Goto WaitDone
 	
 	WaitFailed:
-	DetailPrint "Failed to create process !!!"
+	;Pop $0
+	;${StdUtils.GetLastError} $1
+	DetailPrint "Failed to create process, error code: $1"
 	Goto WaitDone
 
 	WaitNotPossible:
